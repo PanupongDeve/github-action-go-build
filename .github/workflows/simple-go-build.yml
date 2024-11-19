@@ -14,6 +14,11 @@ jobs:
               uses: actions/setup-go@v5
               with:
                 go-version: '1.18'
+            - name: Get Date
+              id: get-date
+              run: |
+                echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+              shell: bash
             
             - uses: actions/cache@v4
               env:
@@ -22,7 +27,8 @@ jobs:
                 path: |
                     ~/.cache/go-build
                     ~/go/pkg/mod
-                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/go.sum') }}
+                # key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/go.sum') }}
+                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ steps.get-date.outputs.date }}
                 restore-keys: |
                     ${{ runner.os }}-build-${{ env.cache-name }}-
                     ${{ runner.os }}-build-
@@ -30,4 +36,4 @@ jobs:
             
             - run: go env -w GO111MODULE=auto
             - run: go run -mod=mod hello-world.go
-            
+
